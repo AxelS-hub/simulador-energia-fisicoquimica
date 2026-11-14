@@ -20,11 +20,11 @@ Para utilizarlo, seleccionar uno de los modos, activar los elementos mediante lo
 
 ## Licencia
 
-Material educativo original bajo licencia **Creative Commons Attribution 4.0 International (CC BY 4.0)**.
+Los materiales educativos originales de este recurso se distribuyen bajo la licencia **Creative Commons Atribución 4.0 Internacional (CC BY 4.0)**.
 
-https://creativecommons.org/licenses/by-sa/4.0/
+https://creativecommons.org/licenses/by/4.0/
 
-La licencia del código fuente se especifica por separado.
+Los componentes de terceros conservan sus respectivas condiciones de uso.
 
 ## Declaración de uso de inteligencia artificial
 
