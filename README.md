@@ -20,7 +20,7 @@ Para utilizarlo, seleccionar uno de los modos, activar los elementos mediante lo
 
 ## Licencia
 
-Material educativo original bajo licencia **Creative Commons Atribución-CompartirIgual 4.0 Internacional (CC BY-SA 4.0)**.
+Material educativo original bajo licencia **Creative Commons Attribution 4.0 International (CC BY 4.0)**.
 
 https://creativecommons.org/licenses/by-sa/4.0/
 
