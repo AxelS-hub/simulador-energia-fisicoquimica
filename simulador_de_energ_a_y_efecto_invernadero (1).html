@@ -1,0 +1,2205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Formas y Cambios de Energía — 3.º Año Fisicoquímica</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: #F7F1E1;
+      color: #1E293B;
+      user-select: none;
+      -webkit-user-select: none;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    /* Estética tipo PhET Colorado */
+    .phet-panel {
+      background-color: #EFE6CE;
+      border: 2px solid #C8B996;
+      border-radius: 12px;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .phet-btn {
+      background: linear-gradient(180deg, #FFFFFF 0%, #EAE0C8 100%);
+      border: 2px solid #948463;
+      border-radius: 8px;
+      color: #1E293B;
+      font-weight: 700;
+      transition: all 0.15s ease;
+      box-shadow: 0 2px 0 #786A4D;
+      cursor: pointer;
+    }
+
+    .phet-btn:hover {
+      background: linear-gradient(180deg, #FFFFFF 0%, #F5EFE0 100%);
+      transform: translateY(-1px);
+    }
+
+    .phet-btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 0 0 #786A4D;
+    }
+
+    .phet-btn-active {
+      background: linear-gradient(180deg, #F59E0B 0%, #D97706 100%) !important;
+      border-color: #92400E !important;
+      color: #FFFFFF !important;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25) !important;
+    }
+
+    .phet-subbtn-active {
+      background: linear-gradient(180deg, #2563EB 0%, #1D4ED8 100%) !important;
+      border-color: #1E3A8A !important;
+      color: #FFFFFF !important;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25) !important;
+    }
+
+    .phet-tab {
+      background-color: #E2D6B5;
+      border: 2px solid #B5A47E;
+      border-bottom: none;
+      border-radius: 10px 10px 0 0;
+      color: #475569;
+      font-weight: 700;
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+
+    .phet-tab-active {
+      background-color: #FBF7EE;
+      border-color: #8C7A53;
+      color: #0F172A;
+      position: relative;
+      top: 2px;
+      padding-bottom: 10px;
+    }
+
+    .canvas-wrapper {
+      background-color: #FBF7EE;
+      border: 2px solid #8C7A53;
+      border-radius: 12px;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-2 sm:p-4">
+
+  <!-- CABECERA Y PESTAÑAS DE MODO -->
+  <header class="max-w-7xl w-full mx-auto">
+    <div class="flex flex-wrap items-end justify-between gap-2 border-b-2 border-[#8C7A53] px-2">
+      <div class="flex flex-wrap gap-1 sm:gap-2">
+        <button id="tabMode1" onclick="switchMode(1)" class="phet-tab phet-tab-active px-4 py-2 text-xs sm:text-sm md:text-base">
+          1. Conservación y degradación de la energía
+        </button>
+        <button id="tabMode2" onclick="switchMode(2)" class="phet-tab px-4 py-2 text-xs sm:text-sm md:text-base">
+          2. Efecto invernadero
+        </button>
+      </div>
+
+      <div class="pb-2">
+        <button onclick="resetCurrentMode()" class="phet-btn px-4 py-1.5 text-xs sm:text-sm flex items-center gap-1.5 bg-red-50 hover:bg-red-100">
+          <span>↺</span>
+          <span>Reiniciar</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="max-w-7xl w-full mx-auto my-2 flex-1 flex flex-col gap-3">
+
+    <!-- CONTROLES MODO 1 -->
+    <section id="controlsMode1" class="phet-panel p-3 flex flex-col gap-2.5">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <!-- Botones principales de fuente y configuración -->
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="btnAddOil" onclick="toggleOil()" class="phet-btn px-3.5 py-2 text-xs sm:text-sm">
+            Añadir aceite
+          </button>
+
+          <div class="h-6 w-0.5 bg-[#C8B996] mx-1 hidden sm:block"></div>
+
+          <button id="btnFireMenu" onclick="toggleFireMenu()" class="phet-btn px-3.5 py-2 text-xs sm:text-sm">
+            Fuego
+          </button>
+
+          <button id="btnSunDirect" onclick="toggleSunDirect()" class="phet-btn px-3.5 py-2 text-xs sm:text-sm">
+            Sol
+          </button>
+
+          <button id="btnSolarPanelMenu" onclick="toggleSolarPanelMenu()" class="phet-btn px-3.5 py-2 text-xs sm:text-sm">
+            Panel solar
+          </button>
+        </div>
+
+        <!-- Leyenda fija de símbolos de energía -->
+        <div class="flex items-center gap-3 bg-[#FBF7EE] px-3 py-1.5 rounded-lg border border-[#C8B996] text-xs sm:text-sm font-semibold">
+          <div class="flex items-center gap-1.5">
+            <span class="inline-flex items-center justify-center w-5 h-5 rounded bg-[#E53935] text-white font-extrabold text-xs border border-white shadow-sm">E</span>
+            <span>Energía térmica</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="inline-flex items-center justify-center w-5 h-5 rounded bg-[#1E88E5] text-white font-extrabold text-xs border border-white shadow-sm">E</span>
+            <span>Energía eléctrica</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sublínea desplegable: FUEGO -->
+      <div id="sublineFire" class="hidden bg-[#FBF7EE] border border-[#C8B996] rounded-lg p-2.5 flex flex-wrap items-center gap-2">
+        <span class="text-xs sm:text-sm font-bold text-amber-900 mr-1">Controles de fuego:</span>
+        <button id="btnFireWater" onclick="toggleFireWater()" class="phet-btn px-3 py-1.5 text-xs sm:text-sm">
+          Encender fuego — Agua
+        </button>
+        <button id="btnFireOil" onclick="toggleFireOil()" class="phet-btn px-3 py-1.5 text-xs sm:text-sm hidden">
+          Encender fuego — Aceite
+        </button>
+      </div>
+
+      <!-- Sublínea desplegable: PANEL SOLAR -->
+      <div id="sublineSolarPanel" class="hidden bg-[#FBF7EE] border border-[#C8B996] rounded-lg p-2.5 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-xs sm:text-sm font-bold text-blue-900">Opciones para AGUA:</span>
+          <button id="btnIronWater" onclick="toggleSolarDevice('water', 'iron')" class="phet-btn px-3 py-1.5 text-xs sm:text-sm">
+            Bloque de hierro — Agua
+          </button>
+          <button id="btnHeaterWater" onclick="toggleSolarDevice('water', 'heater')" class="phet-btn px-3 py-1.5 text-xs sm:text-sm">
+            Caloventor — Agua
+          </button>
+        </div>
+
+        <div id="solarOilOptions" class="hidden flex flex-wrap items-center gap-2 border-t sm:border-t-0 sm:border-l border-[#C8B996] pt-2 sm:pt-0 sm:pl-4">
+          <span class="text-xs sm:text-sm font-bold text-amber-900">Opciones para ACEITE:</span>
+          <button id="btnIronOil" onclick="toggleSolarDevice('oil', 'iron')" class="phet-btn px-3 py-1.5 text-xs sm:text-sm">
+            Bloque de hierro — Aceite
+          </button>
+          <button id="btnHeaterOil" onclick="toggleSolarDevice('oil', 'heater')" class="phet-btn px-3 py-1.5 text-xs sm:text-sm">
+            Caloventor — Aceite
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTROLES MODO 2 -->
+    <section id="controlsMode2" class="phet-panel p-3 hidden flex-wrap items-center justify-between gap-3">
+      <div class="flex flex-wrap items-center gap-3">
+        <button id="btnAddCO2" onclick="toggleCO2()" class="phet-btn px-4 py-2 text-xs sm:text-sm">
+          Añadir CO2
+        </button>
+        <span class="text-xs sm:text-sm font-medium text-slate-700">
+          Modelo didáctico de equilibrio térmico planetario (Sol encendido permanentemente).
+        </span>
+      </div>
+
+      <!-- Leyenda Modo 2 -->
+      <div class="flex flex-wrap items-center gap-3 bg-[#FBF7EE] px-3 py-1.5 rounded-lg border border-[#C8B996] text-xs sm:text-sm font-semibold">
+        <div class="flex items-center gap-1.5">
+          <span class="inline-flex items-center justify-center w-5 h-5 rounded bg-[#E53935] text-white font-extrabold text-xs border border-white shadow-sm">E</span>
+          <span>Energía térmica / radiante</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="inline-flex items-center justify-center px-1.5 h-5 rounded bg-[#16A34A] text-white font-extrabold text-[10px] border border-white shadow-sm">CO2</span>
+          <span>Dióxido de carbono en atmósfera</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- LIENZO DE SIMULACIÓN -->
+    <div class="canvas-wrapper w-full">
+      <canvas id="simCanvas" width="1200" height="580"></canvas>
+    </div>
+
+    <!-- RECUADROS EXPLICATIVOS PERMANENTES (MODO 1) -->
+    <section id="explanatoryBoxesMode1" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <!-- Recuadro 1: Conservación de la energía -->
+      <div class="phet-panel p-3.5 bg-[#FBF7EE] flex flex-col justify-between gap-2">
+        <div>
+          <div class="flex items-center justify-between border-b border-[#D5C7A3] pb-1.5 mb-2">
+            <h2 class="font-extrabold text-sm sm:text-base text-slate-800 flex items-center gap-2">
+              <span class="inline-flex items-center justify-center w-5 h-5 rounded bg-[#E53935] text-white text-xs font-extrabold">E</span>
+              Conservación de la energía
+            </h2>
+            <span id="statusConservation" class="text-xs font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-300">
+              Energía total constante
+            </span>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+            La energía <strong>no se crea ni se destruye</strong>: únicamente se transfiere entre la fuente, el dispositivo, el recipiente y el ambiente, o se transforma (como la energía eléctrica <span class="inline-block px-1 rounded bg-[#1E88E5] text-white font-bold text-[11px]">E</span> del panel solar en energía térmica <span class="inline-block px-1 rounded bg-[#E53935] text-white font-bold text-[11px]">E</span>). Todos los cuadrados <span class="inline-block px-1 rounded bg-[#E53935] text-white font-bold text-[11px]">E</span> se conservan durante el recorrido.
+          </p>
+        </div>
+        <div class="bg-[#EFE6CE] rounded-lg p-2 border border-[#C8B996] flex items-center justify-around text-xs font-bold text-slate-800">
+          <span>Fuente</span>
+          <span>➔</span>
+          <span>Dispositivo</span>
+          <span>➔</span>
+          <span>Líquido (Recipiente)</span>
+          <span>➔</span>
+          <span>Ambiente</span>
+        </div>
+      </div>
+
+      <!-- Recuadro 2: Degradación de la energía -->
+      <div class="phet-panel p-3.5 bg-[#FBF7EE] flex flex-col justify-between gap-2">
+        <div>
+          <div class="flex items-center justify-between border-b border-[#D5C7A3] pb-1.5 mb-2">
+            <h2 class="font-extrabold text-sm sm:text-base text-slate-800 flex items-center gap-2">
+              <span class="inline-flex items-center justify-center w-5 h-5 rounded bg-[#E53935] text-white text-xs font-extrabold">E</span>
+              Degradación de la energía
+            </h2>
+            <span class="text-xs font-bold px-2 py-0.5 rounded bg-red-100 text-red-900 border border-red-300">
+              Dispersión al entorno
+            </span>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+            Parte de la energía térmica <span class="inline-block px-1 rounded bg-[#E53935] text-white font-bold text-[11px]">E</span> pasa continuamente hacia el aire circundante y se dispersa en el entorno. A diferencia de la energía concentrada dentro del recipiente, la energía dispersa en el ambiente <strong>no desaparece</strong>, pero pierde utilidad práctica para calentar los líquidos.
+          </p>
+        </div>
+        <div class="bg-[#EFE6CE] rounded-lg p-2 border border-[#C8B996] flex items-center justify-around text-xs font-bold">
+          <div class="flex items-center gap-1.5 text-slate-800">
+            <span class="inline-flex gap-0.5">
+              <span class="w-3.5 h-3.5 rounded-sm bg-[#E53935] text-white flex items-center justify-center text-[9px]">E</span>
+              <span class="w-3.5 h-3.5 rounded-sm bg-[#E53935] text-white flex items-center justify-center text-[9px]">E</span>
+            </span>
+            <span>Concentrada en recipiente (Aprovechable)</span>
+          </div>
+          <span class="text-slate-500">|</span>
+          <div class="flex items-center gap-1.5 text-slate-700">
+            <span class="w-3.5 h-3.5 rounded-sm bg-[#E53935] text-white flex items-center justify-center text-[9px]">E</span>
+            <span>Dispersa en el ambiente (Degradada)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    /***********************************************************************
+     * ESTADO GLOBAL DE LA SIMULACIÓN
+     ***********************************************************************/
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let currentMode = 1; // 1: Conservación y degradación | 2: Efecto invernadero
+
+    // --- ESTADO MODO 1 ---
+    const mode1 = {
+      oilAdded: false,
+      fireMenuOpen: false,
+      fireWater: false,
+      fireOil: false,
+      sunDirect: false,
+      solarPanelMenuOpen: false,
+      waterSolarDevice: 'none', // 'none' | 'iron' | 'heater'
+      oilSolarDevice: 'none',   // 'none' | 'iron' | 'heater'
+
+      tempAmbient: 20.0,
+      tempWater: 20.0,
+      tempOil: 20.0,
+
+      // Cuadrados rojos almacenados dentro de cada líquido
+      waterStoredE: [],
+      oilStoredE: [],
+
+      // Partículas de energía en tránsito (conservación y degradación)
+      transitE: [],
+
+      // Corrientes visuales de aire caliente (medio de transporte por convección, no energía)
+      convectionPlumes: [],
+
+      // Temporizadores de emisión
+      timers: {
+        fireWater: 0,
+        fireOil: 0,
+        sunDirect: 0,
+        solarPanelSun: 0,
+        cableWater: 0,
+        cableOil: 0,
+        degradeWater: 0,
+        degradeOil: 0,
+        ambientTransferWater: 0,
+        ambientTransferOil: 0
+      }
+    };
+
+    // --- ESTADO MODO 2 (EFECTO INVERNADERO) ---
+    const mode2 = {
+      co2Added: false,
+      tempEarth: 20.0,
+
+      // Entre 6-10 (sin CO2) o 18-20 (con CO2) cuadrados rojos E estáticos en la atmósfera
+      staticAtmosE: [],
+
+      // Exactamente 4 (sin CO2) o 2 (con CO2) cuadrados rojos E rápidos que pueden salir
+      escapingAtmosE: [],
+
+      // Cuadrados rojos E que entran continuamente desde el Sol
+      incomingSolarE: [],
+
+      // Muy pocos cuadrados E que rebotan en la atmósfera
+      reflectedSolarE: [],
+
+      // Cuadrados E en reemisión infrarroja entre el CO2 y la superficie terrestre
+      reemittedIrE: [],
+
+      // Cuadrados verdes de CO2 distribuidos en la atmósfera
+      co2Molecules: [],
+
+      timers: {
+        sunEmit: 0,
+        irBounce: 0
+      }
+    };
+
+    /***********************************************************************
+     * INICIALIZACIÓN Y REINICIO DE MODOS
+     ***********************************************************************/
+    function initMode1() {
+      mode1.oilAdded = false;
+      mode1.fireMenuOpen = false;
+      mode1.fireWater = false;
+      mode1.fireOil = false;
+      mode1.sunDirect = false;
+      mode1.solarPanelMenuOpen = false;
+      mode1.waterSolarDevice = 'none';
+      mode1.oilSolarDevice = 'none';
+
+      mode1.tempAmbient = 20.0;
+      mode1.tempWater = 20.0;
+      mode1.tempOil = 20.0;
+
+      mode1.transitE = [];
+      mode1.convectionPlumes = [];
+
+      for (let k in mode1.timers) mode1.timers[k] = 0;
+
+      // Poblar cuadrados rojos iniciales dentro del agua (a 20 °C)
+      mode1.waterStoredE = createInitialLiquidSquares('water', 6);
+      // Poblar cuadrados rojos iniciales dentro del aceite (a 20 °C)
+      mode1.oilStoredE = createInitialLiquidSquares('oil', 5);
+
+      updateMode1UI();
+    }
+
+    function createInitialLiquidSquares(vesselType, count) {
+      const arr = [];
+      for (let i = 0; i < count; i++) {
+        arr.push({
+          relX: 0.18 + (i % 3) * 0.3 + (Math.random() * 0.08 - 0.04),
+          relY: 0.25 + Math.floor(i / 3) * 0.32 + (Math.random() * 0.08 - 0.04),
+          vx: (Math.random() - 0.5) * 0.18,
+          vy: (Math.random() - 0.5) * 0.18
+        });
+      }
+      return arr;
+    }
+
+    function initMode2() {
+      mode2.co2Added = false;
+      mode2.tempEarth = 20.0;
+      mode2.staticAtmosE = [];
+      mode2.escapingAtmosE = [];
+      mode2.incomingSolarE = [];
+      mode2.reflectedSolarE = [];
+      mode2.reemittedIrE = [];
+      mode2.co2Molecules = [];
+      mode2.timers.sunEmit = 0;
+      mode2.timers.irBounce = 0;
+
+      // Crear moléculas de CO2 precalculadas en el anillo atmosférico
+      const earthCenter = { x: 630, y: 310 };
+      const numCO2 = 18;
+      for (let i = 0; i < numCO2; i++) {
+        const angle = (i / numCO2) * Math.PI * 2 + 0.15;
+        const radius = 175 + (i % 2 === 0 ? -14 : 14);
+        mode2.co2Molecules.push({
+          angle,
+          radius,
+          x: earthCenter.x + Math.cos(angle) * radius,
+          y: earthCenter.y + Math.sin(angle) * radius,
+          phase: Math.random() * Math.PI * 2
+        });
+      }
+
+      // Condición inicial sin CO2: entre 6 y 10 cuadrados E estáticos (iniciamos con 8)
+      populateStaticAtmosphereSquares(8);
+
+      // Condición inicial sin CO2: exactamente 4 cuadrados E más rápidos que salen
+      for (let i = 0; i < 4; i++) {
+        mode2.escapingAtmosE.push(createEscapingSquare(i / 4));
+      }
+
+      // Algunos cuadrados solares ya en camino para continuidad inmediata
+      for (let i = 0; i < 4; i++) {
+        mode2.incomingSolarE.push(createIncomingSolarSquare(i * 0.25));
+      }
+
+      updateMode2UI();
+    }
+
+    function populateStaticAtmosphereSquares(targetCount) {
+      const earthCenter = { x: 630, y: 310 };
+      while (mode2.staticAtmosE.length < targetCount) {
+        const idx = mode2.staticAtmosE.length;
+        const angle = (idx * 2.39996) % (Math.PI * 2); // Distribución áurea uniforme
+        const radius = 160 + (idx % 3) * 16;
+        mode2.staticAtmosE.push({
+          baseAngle: angle,
+          radius: radius,
+          phase: Math.random() * Math.PI * 2,
+          x: earthCenter.x + Math.cos(angle) * radius,
+          y: earthCenter.y + Math.sin(angle) * radius
+        });
+      }
+      while (mode2.staticAtmosE.length > targetCount) {
+        mode2.staticAtmosE.pop();
+      }
+    }
+
+    function createEscapingSquare(progress = 0) {
+      // Trayectorias salientes de radiación infrarroja terrestre hacia el espacio
+      const earthCenter = { x: 630, y: 310 };
+      const angles = [-0.85, -0.35, 0.35, 0.85, -1.3, 1.25];
+      const chosenAngle = angles[Math.floor(Math.random() * angles.length)] + (Math.random() * 0.16 - 0.08);
+      const startR = 132; // Superficie terrestre
+      const endR = 295;   // Exterior de la atmósfera
+      return {
+        angle: chosenAngle,
+        progress: progress, // 0 a 1
+        startR,
+        endR,
+        speed: 0.0068 + Math.random() * 0.0012,
+        x: earthCenter.x + Math.cos(chosenAngle) * (startR + (endR - startR) * progress),
+        y: earthCenter.y + Math.sin(chosenAngle) * (startR + (endR - startR) * progress)
+      };
+    }
+
+    function createIncomingSolarSquare(progress = 0) {
+      // Trayectoria desde el Sol (izquierda) hacia la Tierra a través de la atmósfera
+      const sunPos = { x: 145, y: 145 };
+      const targetYOffset = (Math.random() - 0.5) * 90;
+      const targetPos = { x: 535 + Math.random() * 45, y: 285 + targetYOffset };
+      return {
+        startX: sunPos.x + 40,
+        startY: sunPos.y + 20,
+        targetX: targetPos.x,
+        targetY: targetPos.y,
+        progress: progress,
+        speed: 0.0065,
+        x: sunPos.x + 40,
+        y: sunPos.y + 20
+      };
+    }
+
+    /***********************************************************************
+     * CONTROLES DE INTERFAZ Y BOTONES
+     ***********************************************************************/
+    function switchMode(mode) {
+      currentMode = mode;
+      const tab1 = document.getElementById('tabMode1');
+      const tab2 = document.getElementById('tabMode2');
+      const ctrl1 = document.getElementById('controlsMode1');
+      const ctrl2 = document.getElementById('controlsMode2');
+      const boxes1 = document.getElementById('explanatoryBoxesMode1');
+
+      if (mode === 1) {
+        tab1.classList.add('phet-tab-active');
+        tab2.classList.remove('phet-tab-active');
+        ctrl1.classList.remove('hidden');
+        ctrl2.classList.add('hidden');
+        ctrl2.classList.remove('flex');
+        boxes1.classList.remove('hidden');
+      } else {
+        tab2.classList.add('phet-tab-active');
+        tab1.classList.remove('phet-tab-active');
+        ctrl2.classList.remove('hidden');
+        ctrl2.classList.add('flex');
+        ctrl1.classList.add('hidden');
+        boxes1.classList.add('hidden');
+      }
+    }
+
+    function resetCurrentMode() {
+      if (currentMode === 1) {
+        initMode1();
+      } else {
+        initMode2();
+      }
+    }
+
+    // --- ACCIONES MODO 1 ---
+    function toggleOil() {
+      mode1.oilAdded = !mode1.oilAdded;
+      if (mode1.oilAdded) {
+        // Al añadir aceite, inicia en 20 °C con sus cuadrados rojos iniciales
+        mode1.tempOil = 20.0;
+        mode1.oilStoredE = createInitialLiquidSquares('oil', 5);
+        mode1.fireOil = false;
+        mode1.oilSolarDevice = 'none';
+      } else {
+        // Al ocultar aceite, apagar sus dispositivos y limpiar sus partículas en tránsito
+        mode1.fireOil = false;
+        mode1.oilSolarDevice = 'none';
+        mode1.transitE = mode1.transitE.filter(p => p.vessel !== 'oil');
+        mode1.convectionPlumes = mode1.convectionPlumes.filter(p => p.vessel !== 'oil');
+      }
+      updateMode1UI();
+    }
+
+    function toggleFireMenu() {
+      mode1.fireMenuOpen = !mode1.fireMenuOpen;
+      updateMode1UI();
+    }
+
+    function toggleFireWater() {
+      mode1.fireWater = !mode1.fireWater;
+      if (mode1.fireWater) {
+        // Si se enciende fuego debajo de la hornalla de agua, desactivar bloque/caloventor de agua
+        mode1.waterSolarDevice = 'none';
+      }
+      updateMode1UI();
+    }
+
+    function toggleFireOil() {
+      if (!mode1.oilAdded) return;
+      mode1.fireOil = !mode1.fireOil;
+      if (mode1.fireOil) {
+        mode1.oilSolarDevice = 'none';
+      }
+      updateMode1UI();
+    }
+
+    function toggleSunDirect() {
+      mode1.sunDirect = !mode1.sunDirect;
+      // Condición explícita de temperatura ambiental: 40 °C con Sol activo, 20 °C cuando se desactiva
+      mode1.tempAmbient = mode1.sunDirect ? 40.0 : 20.0;
+      updateMode1UI();
+    }
+
+    function toggleSolarPanelMenu() {
+      mode1.solarPanelMenuOpen = !mode1.solarPanelMenuOpen;
+      if (!mode1.solarPanelMenuOpen) {
+        // Si se desactiva el botón principal "Panel solar", apagar opciones del panel solar
+        mode1.waterSolarDevice = 'none';
+        mode1.oilSolarDevice = 'none';
+        mode1.transitE = mode1.transitE.filter(p => p.category !== 'solarPanel');
+      }
+      updateMode1UI();
+    }
+
+    function toggleSolarDevice(vessel, deviceType) {
+      if (vessel === 'water') {
+        if (mode1.waterSolarDevice === deviceType) {
+          mode1.waterSolarDevice = 'none';
+        } else {
+          mode1.waterSolarDevice = deviceType;
+          // Evitar superposición con el fuego en el recipiente de agua
+          mode1.fireWater = false;
+        }
+        mode1.transitE = mode1.transitE.filter(p => !(p.category === 'solarPanel' && p.vessel === 'water'));
+      } else if (vessel === 'oil' && mode1.oilAdded) {
+        if (mode1.oilSolarDevice === deviceType) {
+          mode1.oilSolarDevice = 'none';
+        } else {
+          mode1.oilSolarDevice = deviceType;
+          mode1.fireOil = false;
+        }
+        mode1.transitE = mode1.transitE.filter(p => !(p.category === 'solarPanel' && p.vessel === 'oil'));
+      }
+      updateMode1UI();
+    }
+
+    function updateMode1UI() {
+      const setBtnState = (id, active, isSub = false) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const cls = isSub ? 'phet-subbtn-active' : 'phet-btn-active';
+        if (active) el.classList.add(cls);
+        else el.classList.remove(cls);
+      };
+
+      setBtnState('btnAddOil', mode1.oilAdded);
+      setBtnState('btnFireMenu', mode1.fireMenuOpen);
+      setBtnState('btnSunDirect', mode1.sunDirect);
+      setBtnState('btnSolarPanelMenu', mode1.solarPanelMenuOpen);
+
+      // Sublínea Fuego
+      const subFire = document.getElementById('sublineFire');
+      if (mode1.fireMenuOpen) subFire.classList.remove('hidden');
+      else subFire.classList.add('hidden');
+
+      const btnFireOil = document.getElementById('btnFireOil');
+      if (mode1.oilAdded) btnFireOil.classList.remove('hidden');
+      else btnFireOil.classList.add('hidden');
+
+      setBtnState('btnFireWater', mode1.fireWater, true);
+      setBtnState('btnFireOil', mode1.fireOil, true);
+
+      // Sublínea Panel solar
+      const subSolar = document.getElementById('sublineSolarPanel');
+      if (mode1.solarPanelMenuOpen) subSolar.classList.remove('hidden');
+      else subSolar.classList.add('hidden');
+
+      const solarOilOpts = document.getElementById('solarOilOptions');
+      if (mode1.oilAdded) solarOilOpts.classList.remove('hidden');
+      else solarOilOpts.classList.add('hidden');
+
+      setBtnState('btnIronWater', mode1.waterSolarDevice === 'iron', true);
+      setBtnState('btnHeaterWater', mode1.waterSolarDevice === 'heater', true);
+      setBtnState('btnIronOil', mode1.oilSolarDevice === 'iron', true);
+      setBtnState('btnHeaterOil', mode1.oilSolarDevice === 'heater', true);
+    }
+
+    // --- ACCIONES MODO 2 ---
+    function toggleCO2() {
+      mode2.co2Added = !mode2.co2Added;
+
+      // Ajustar cantidad de cuadrados E rápidos que pueden salir (4 sin CO2, 2 con CO2)
+      const targetEscaping = mode2.co2Added ? 2 : 4;
+      while (mode2.escapingAtmosE.length > targetEscaping) {
+        // Convertir excedente en energía acumulada en la atmósfera
+        mode2.escapingAtmosE.pop();
+      }
+      while (mode2.escapingAtmosE.length < targetEscaping) {
+        mode2.escapingAtmosE.push(createEscapingSquare(Math.random() * 0.6));
+      }
+
+      updateMode2UI();
+    }
+
+    function updateMode2UI() {
+      const btn = document.getElementById('btnAddCO2');
+      if (mode2.co2Added) btn.classList.add('phet-btn-active');
+      else btn.classList.remove('phet-btn-active');
+    }
+
+    /***********************************************************************
+     * GEOMETRÍA Y POSICIONES FIJAS (MODO 1)
+     ***********************************************************************/
+    function getMode1Layout() {
+      // Si el aceite no está añadido, el agua se ubica en posición central-derecha cómoda;
+      // si se añade aceite, ambos recipientes tienen posiciones fijas simétricas sin superposición.
+      const waterX = mode1.oilAdded ? 450 : 560;
+      const oilX = 815;
+      const vesselY = 230;
+      const vesselW = 150;
+      const vesselH = 145;
+      const standH = 75;
+
+      return {
+        sun: { x: 145, y: 95, r: 42 },
+        solarPanel: { x: 85, y: 390, w: 155, h: 55 },
+        ambientThermo: { x: 1055, y: 65 },
+        water: {
+          x: waterX,
+          y: vesselY,
+          w: vesselW,
+          h: vesselH,
+          standY: vesselY + vesselH,
+          standH: standH
+        },
+        oil: {
+          x: oilX,
+          y: vesselY,
+          w: vesselW,
+          h: vesselH,
+          standY: vesselY + vesselH,
+          standH: standH
+        }
+      };
+    }
+
+    function isSolarPanelSystemVisible() {
+      if (!mode1.solarPanelMenuOpen) return false;
+      const waterActive = mode1.waterSolarDevice !== 'none';
+      const oilActive = mode1.oilAdded && mode1.oilSolarDevice !== 'none';
+      return waterActive || oilActive;
+    }
+
+    /***********************************************************************
+     * LÓGICA FÍSICA Y DE PARTÍCULAS — MODO 1
+     ***********************************************************************/
+    function updateMode1Physics() {
+      const layout = getMode1Layout();
+      const solarActive = isSolarPanelSystemVisible();
+
+      // 1. Calentamiento mediante FUEGO
+      if (mode1.fireWater) {
+        mode1.timers.fireWater++;
+        if (mode1.timers.fireWater >= 38) {
+          mode1.timers.fireWater = 0;
+          spawnFireSquare('water', layout.water);
+        }
+      }
+      if (mode1.oilAdded && mode1.fireOil) {
+        mode1.timers.fireOil++;
+        if (mode1.timers.fireOil >= 38) {
+          mode1.timers.fireOil = 0;
+          spawnFireSquare('oil', layout.oil);
+        }
+      }
+
+      // 2. Calentamiento mediante SOL DIRECTO
+      if (mode1.sunDirect) {
+        mode1.timers.sunDirect++;
+        // Emitir numerosos cuadrados rojos desde el Sol hacia toda la zona experimental
+        if (mode1.timers.sunDirect >= 14) {
+          mode1.timers.sunDirect = 0;
+          spawnDirectSunSquare(layout);
+        }
+      }
+
+      // 3. Calentamiento mediante PANEL SOLAR
+      if (solarActive) {
+        // El Sol envía energía térmica/radiante hacia el panel solar
+        mode1.timers.solarPanelSun++;
+        if (mode1.timers.solarPanelSun >= 24) {
+          mode1.timers.solarPanelSun = 0;
+          mode1.transitE.push({
+            type: 'thermal',
+            category: 'solarPanel',
+            vessel: 'panel',
+            x: layout.sun.x + 20 + (Math.random() * 20 - 10),
+            y: layout.sun.y + 35,
+            targetX: layout.solarPanel.x + layout.solarPanel.w * (0.3 + Math.random() * 0.4),
+            targetY: layout.solarPanel.y + 15,
+            progress: 0,
+            speed: 0.022,
+            stage: 'sunToPanel'
+          });
+        }
+
+        // Cable hacia dispositivo de AGUA (más rápido que el Sol directo)
+        if (mode1.waterSolarDevice !== 'none') {
+          mode1.timers.cableWater++;
+          if (mode1.timers.cableWater >= 30) {
+            mode1.timers.cableWater = 0;
+            spawnSolarCableSquare('water', mode1.waterSolarDevice, layout.solarPanel, layout.water);
+          }
+        }
+
+        // Cable hacia dispositivo de ACEITE
+        if (mode1.oilAdded && mode1.oilSolarDevice !== 'none') {
+          mode1.timers.cableOil++;
+          if (mode1.timers.cableOil >= 30) {
+            mode1.timers.cableOil = 0;
+            spawnSolarCableSquare('oil', mode1.oilSolarDevice, layout.solarPanel, layout.oil);
+          }
+        }
+      }
+
+      // Corrientes visuales de aire caliente en Caloventor (medio de convección)
+      if (solarActive && mode1.waterSolarDevice === 'heater' && Math.random() < 0.22) {
+        spawnConvectionPlume('water', layout.water);
+      }
+      if (solarActive && mode1.oilAdded && mode1.oilSolarDevice === 'heater' && Math.random() < 0.22) {
+        spawnConvectionPlume('oil', layout.oil);
+      }
+
+      // 4. Actualizar corrientes de aire caliente (convección)
+      for (let i = mode1.convectionPlumes.length - 1; i >= 0; i--) {
+        const p = mode1.convectionPlumes[i];
+        p.y -= p.vy;
+        p.x += Math.sin(p.y * 0.08 + p.phase) * 0.45;
+        p.alpha -= 0.014;
+        p.radius += 0.18;
+        if (p.alpha <= 0 || p.y < p.minY) {
+          mode1.convectionPlumes.splice(i, 1);
+        }
+      }
+
+      // 5. Actualizar partículas E en tránsito
+      for (let i = mode1.transitE.length - 1; i >= 0; i--) {
+        const p = mode1.transitE[i];
+
+        if (p.stage === 'sunToPanel') {
+          p.progress += p.speed;
+          p.x = p.x + (p.targetX - p.x) * 0.08;
+          p.y = p.y + (p.targetY - p.y) * 0.08;
+          if (Math.hypot(p.targetX - p.x, p.targetY - p.y) < 12 || p.progress >= 1) {
+            mode1.transitE.splice(i, 1);
+          }
+        } else if (p.stage === 'alongCable') {
+          p.pathProgress += p.speed;
+          const pt = getPointAlongPolyline(p.cablePoints, p.pathProgress);
+          p.x = pt.x;
+          p.y = pt.y;
+          if (p.pathProgress >= 1) {
+            // Al llegar al bloque de hierro o al caloventor, el cuadrado azul se transforma en rojo
+            p.type = 'thermal';
+            p.stage = p.deviceType === 'iron' ? 'conductionToLiquid' : 'convectionToLiquid';
+            p.startX = p.x;
+            p.startY = p.y;
+            p.targetX = p.box.x + 35 + Math.random() * (p.box.w - 70);
+            p.targetY = p.box.y + p.box.h - 25;
+            p.progress = 0;
+          }
+        } else if (p.stage === 'conductionToLiquid' || p.stage === 'convectionToLiquid' || p.stage === 'fireToLiquid') {
+          p.progress += 0.024;
+          p.x = p.startX + (p.targetX - p.startX) * p.progress;
+          p.y = p.startY + (p.targetY - p.startY) * p.progress;
+          if (p.progress >= 1) {
+            // El cuadrado rojo ingresa al líquido o se dispersa parcialmente al entorno
+            deliverThermalEnergyToVessel(p.vessel, p.heatDelta);
+            mode1.transitE.splice(i, 1);
+          }
+        } else if (p.stage === 'directSunRay') {
+          p.x += p.vx;
+          p.y += p.vy;
+          // Si este rayo solar incide sobre un recipiente
+          if (p.hitsVessel) {
+            const box = p.vessel === 'water' ? layout.water : layout.oil;
+            if (p.y >= box.y + 45) {
+              deliverThermalEnergyToVessel(p.vessel, p.heatDelta);
+              mode1.transitE.splice(i, 1);
+              continue;
+            }
+          }
+          // Si pasa de largo hacia el ambiente (energía no aprovechada por los recipientes)
+          if (p.x > canvas.width + 30 || p.y > canvas.height + 30) {
+            mode1.transitE.splice(i, 1);
+          }
+        } else if (p.stage === 'degradingToAmbient') {
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.y < -25 || p.x < -25 || p.x > canvas.width + 25) {
+            mode1.transitE.splice(i, 1);
+          }
+        }
+      }
+
+      // 6. Enfriamiento / Equilibrio térmico con el ambiente y Degradación de la energía
+      handleAmbientExchange('water', layout.water);
+      if (mode1.oilAdded) {
+        handleAmbientExchange('oil', layout.oil);
+      }
+
+      // 7. Movimiento suave de los cuadrados E almacenados dentro de cada líquido
+      updateLiquidInternalSquares(mode1.waterStoredE, mode1.tempWater);
+      if (mode1.oilAdded) {
+        updateLiquidInternalSquares(mode1.oilStoredE, mode1.tempOil);
+      }
+    }
+
+    function spawnFireSquare(vessel, box) {
+      const startX = box.x + box.w * 0.3 + Math.random() * (box.w * 0.4);
+      const startY = box.standY + box.standH - 18;
+      // La mayoría ingresa al líquido; una fracción se dispersa directamente al ambiente (degradación)
+      const goesToAmbient = Math.random() < 0.22;
+      if (goesToAmbient) {
+        mode1.transitE.push({
+          type: 'thermal',
+          category: 'fire',
+          vessel,
+          stage: 'degradingToAmbient',
+          x: startX,
+          y: startY - 10,
+          vx: (Math.random() < 0.5 ? -1 : 1) * (1.1 + Math.random() * 0.6),
+          vy: -1.4 - Math.random() * 0.5
+        });
+      } else {
+        mode1.transitE.push({
+          type: 'thermal',
+          category: 'fire',
+          vessel,
+          stage: 'fireToLiquid',
+          startX,
+          startY,
+          x: startX,
+          y: startY,
+          targetX: box.x + 30 + Math.random() * (box.w - 60),
+          targetY: box.y + box.h - 25,
+          progress: 0,
+          // El aceite aumenta su temperatura más rápido que el agua ante el mismo aporte térmico
+          heatDelta: vessel === 'water' ? 1.15 : 2.15
+        });
+      }
+    }
+
+    function spawnDirectSunSquare(layout) {
+      // El Sol emite numerosos cuadrados rojos, pero SOLO una pequeña parte ingresa a los recipientes
+      const roll = Math.random();
+      let hitsVessel = false;
+      let targetVessel = null;
+      let targetX = 250 + Math.random() * 880;
+      let targetY = 540;
+
+      if (roll < 0.12) {
+        hitsVessel = true;
+        targetVessel = 'water';
+        targetX = layout.water.x + 25 + Math.random() * (layout.water.w - 50);
+        targetY = layout.water.y + 55;
+      } else if (mode1.oilAdded && roll >= 0.12 && roll < 0.24) {
+        hitsVessel = true;
+        targetVessel = 'oil';
+        targetX = layout.oil.x + 25 + Math.random() * (layout.oil.w - 50);
+        targetY = layout.oil.y + 55;
+      }
+
+      const startX = layout.sun.x + (Math.random() * 34 - 17);
+      const startY = layout.sun.y + 25;
+      const dx = targetX - startX;
+      const dy = targetY - startY;
+      const dist = Math.hypot(dx, dy) || 1;
+      const speed = 2.6;
+
+      mode1.transitE.push({
+        type: 'thermal',
+        category: 'sunDirect',
+        vessel: targetVessel,
+        hitsVessel,
+        stage: 'directSunRay',
+        x: startX,
+        y: startY,
+        vx: (dx / dist) * speed,
+        vy: (dy / dist) * speed,
+        // Calentamiento lento mediante Sol directo
+        heatDelta: targetVessel === 'water' ? 0.38 : 0.68
+      });
+    }
+
+    function getCableWaypoints(solarPanel, box, deviceType, vessel) {
+      const startX = solarPanel.x + solarPanel.w - 10;
+      const startY = solarPanel.y + solarPanel.h - 12;
+      const midY = vessel === 'water' ? 505 : 525;
+      const endX = box.x + box.w / 2;
+      const endY = deviceType === 'iron'
+        ? box.standY + 26
+        : box.standY + box.standH - 16;
+
+      return [
+        { x: startX, y: startY },
+        { x: startX + 35, y: midY },
+        { x: endX - 45, y: midY },
+        { x: endX, y: endY }
+      ];
+    }
+
+    function getPointAlongPolyline(pts, t) {
+      const clamped = Math.max(0, Math.min(1, t));
+      let totalLen = 0;
+      const segLens = [];
+      for (let i = 0; i < pts.length - 1; i++) {
+        const d = Math.hypot(pts[i + 1].x - pts[i].x, pts[i + 1].y - pts[i].y);
+        segLens.push(d);
+        totalLen += d;
+      }
+      let targetDist = clamped * totalLen;
+      for (let i = 0; i < segLens.length; i++) {
+        if (targetDist <= segLens[i] || i === segLens.length - 1) {
+          const localT = segLens[i] === 0 ? 0 : targetDist / segLens[i];
+          return {
+            x: pts[i].x + (pts[i + 1].x - pts[i].x) * localT,
+            y: pts[i].y + (pts[i + 1].y - pts[i].y) * localT
+          };
+        }
+        targetDist -= segLens[i];
+      }
+      return pts[pts.length - 1];
+    }
+
+    function spawnSolarCableSquare(vessel, deviceType, solarPanel, box) {
+      const cablePoints = getCableWaypoints(solarPanel, box, deviceType, vessel);
+      mode1.transitE.push({
+        type: 'electrical', // Cuadrado azul con letra E en el cable
+        category: 'solarPanel',
+        vessel,
+        deviceType,
+        box,
+        cablePoints,
+        pathProgress: 0,
+        speed: 0.017,
+        x: cablePoints[0].x,
+        y: cablePoints[0].y,
+        stage: 'alongCable',
+        // Calentamiento con panel solar más rápido que con Sol directo
+        heatDelta: vessel === 'water' ? 1.05 : 1.95
+      });
+    }
+
+    function spawnConvectionPlume(vessel, box) {
+      mode1.convectionPlumes.push({
+        vessel,
+        x: box.x + 35 + Math.random() * (box.w - 70),
+        y: box.standY + box.standH - 32,
+        minY: box.y + box.h - 4,
+        vy: 1.2 + Math.random() * 0.5,
+        radius: 6 + Math.random() * 4,
+        alpha: 0.52,
+        phase: Math.random() * Math.PI * 2
+      });
+    }
+
+    function deliverThermalEnergyToVessel(vessel, deltaTemp) {
+      if (vessel === 'water') {
+        const maxTemp = mode1.sunDirect && !mode1.fireWater && mode1.waterSolarDevice === 'none' ? 40.0 : 100.0;
+        mode1.tempWater = Math.min(maxTemp, mode1.tempWater + deltaTemp);
+
+        const desiredSquares = Math.min(18, 6 + Math.floor((mode1.tempWater - 20) / 6));
+        if (mode1.waterStoredE.length < desiredSquares) {
+          mode1.waterStoredE.push({
+            relX: 0.2 + Math.random() * 0.6,
+            relY: 0.35 + Math.random() * 0.5,
+            vx: (Math.random() - 0.5) * 0.25,
+            vy: (Math.random() - 0.5) * 0.25
+          });
+        } else {
+          // Si ya alcanzó alta concentración, parte de la energía térmica se dispersa al ambiente
+          const layout = getMode1Layout();
+          emitDegradedEnergyFromVessel(layout.water, 'water');
+        }
+      } else if (vessel === 'oil' && mode1.oilAdded) {
+        const maxTemp = mode1.sunDirect && !mode1.fireOil && mode1.oilSolarDevice === 'none' ? 40.0 : 100.0;
+        mode1.tempOil = Math.min(maxTemp, mode1.tempOil + deltaTemp);
+
+        const desiredSquares = Math.min(16, 5 + Math.floor((mode1.tempOil - 20) / 6.5));
+        if (mode1.oilStoredE.length < desiredSquares) {
+          mode1.oilStoredE.push({
+            relX: 0.2 + Math.random() * 0.6,
+            relY: 0.35 + Math.random() * 0.5,
+            vx: (Math.random() - 0.5) * 0.25,
+            vy: (Math.random() - 0.5) * 0.25
+          });
+        } else {
+          const layout = getMode1Layout();
+          emitDegradedEnergyFromVessel(layout.oil, 'oil');
+        }
+      }
+    }
+
+    function emitDegradedEnergyFromVessel(box, vessel) {
+      mode1.transitE.push({
+        type: 'thermal',
+        category: 'degradation',
+        vessel,
+        stage: 'degradingToAmbient',
+        x: box.x + 25 + Math.random() * (box.w - 50),
+        y: box.y + 30,
+        vx: (Math.random() - 0.5) * 1.4,
+        vy: -1.2 - Math.random() * 0.6
+      });
+    }
+
+    function handleAmbientExchange(vessel, box) {
+      const solarActive = isSolarPanelSystemVisible();
+      const isActivelyHeated = vessel === 'water'
+        ? (mode1.fireWater || mode1.sunDirect || (solarActive && mode1.waterSolarDevice !== 'none'))
+        : (mode1.fireOil || mode1.sunDirect || (solarActive && mode1.oilSolarDevice !== 'none'));
+
+      const currentTemp = vessel === 'water' ? mode1.tempWater : mode1.tempOil;
+      const storedArr = vessel === 'water' ? mode1.waterStoredE : mode1.oilStoredE;
+      const baseSquares = vessel === 'water' ? 6 : 5;
+      const timerKey = vessel === 'water' ? 'degradeWater' : 'degradeOil';
+
+      // Si el líquido está a mayor temperatura que el ambiente, sede energía progresivamente al entorno
+      if (currentTemp > mode1.tempAmbient + 0.05) {
+        mode1.timers[timerKey]++;
+        const coolingRate = isActivelyHeated ? 0.004 : 0.032;
+        if (vessel === 'water') {
+          mode1.tempWater = Math.max(mode1.tempAmbient, mode1.tempWater - coolingRate);
+        } else {
+          mode1.tempOil = Math.max(mode1.tempAmbient, mode1.tempOil - coolingRate * 1.35);
+        }
+
+        const interval = isActivelyHeated ? 85 : 52;
+        if (mode1.timers[timerKey] >= interval) {
+          mode1.timers[timerKey] = 0;
+          emitDegradedEnergyFromVessel(box, vessel);
+          const targetCount = Math.max(
+            baseSquares,
+            baseSquares + Math.floor(((vessel === 'water' ? mode1.tempWater : mode1.tempOil) - 20) / 6)
+          );
+          if (storedArr.length > targetCount) {
+            storedArr.pop();
+          }
+        }
+      } else if (!isActivelyHeated && currentTemp < mode1.tempAmbient - 0.05) {
+        // Si el ambiente está más cálido, se equilibra progresivamente
+        if (vessel === 'water') {
+          mode1.tempWater = Math.min(mode1.tempAmbient, mode1.tempWater + 0.025);
+        } else {
+          mode1.tempOil = Math.min(mode1.tempAmbient, mode1.tempOil + 0.035);
+        }
+      }
+    }
+
+    function updateLiquidInternalSquares(squaresArr, temp) {
+      const speedFactor = 1 + (temp - 20) * 0.028;
+      for (let sq of squaresArr) {
+        sq.relX += (sq.vx * 0.012) * speedFactor;
+        sq.relY += (sq.vy * 0.012) * speedFactor;
+        if (sq.relX < 0.14) { sq.relX = 0.14; sq.vx *= -1; }
+        if (sq.relX > 0.86) { sq.relX = 0.86; sq.vx *= -1; }
+        if (sq.relY < 0.25) { sq.relY = 0.25; sq.vy *= -1; }
+        if (sq.relY > 0.86) { sq.relY = 0.86; sq.vy *= -1; }
+      }
+    }
+
+    /***********************************************************************
+     * DIBUJO EN CANVAS — MODO 1
+     ***********************************************************************/
+    function drawMode1() {
+      const layout = getMode1Layout();
+      const solarActive = isSolarPanelSystemVisible();
+
+      // Fondo crema limpio
+      ctx.fillStyle = '#FBF7EE';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Suelo / Mesa de laboratorio fija
+      ctx.fillStyle = '#E5D8B8';
+      ctx.fillRect(0, 495, canvas.width, canvas.height - 495);
+      ctx.strokeStyle = '#B8A67E';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, 495);
+      ctx.lineTo(canvas.width, 495);
+      ctx.stroke();
+
+      // 1. Dibujar el Sol si está activo "Sol" o si hay algún dispositivo de "Panel solar" seleccionado
+      if (mode1.sunDirect || solarActive) {
+        drawSun(layout.sun.x, layout.sun.y, layout.sun.r);
+      }
+
+      // 2. Dibujar Panel Solar y Cables únicamente si hay al menos una opción seleccionada
+      if (solarActive) {
+        if (mode1.waterSolarDevice !== 'none') {
+          const pts = getCableWaypoints(layout.solarPanel, layout.water, mode1.waterSolarDevice, 'water');
+          drawElectricalCable(pts);
+        }
+        if (mode1.oilAdded && mode1.oilSolarDevice !== 'none') {
+          const pts = getCableWaypoints(layout.solarPanel, layout.oil, mode1.oilSolarDevice, 'oil');
+          drawElectricalCable(pts);
+        }
+        drawSolarPanelObject(layout.solarPanel);
+      }
+
+      // 3. Dibujar corrientes visuales de aire caliente (convección del caloventor)
+      drawConvectionPlumes();
+
+      // 4. Dibujar estación de AGUA (recipiente, soporte/bloque/caloventor/fuego y termómetro)
+      drawVesselStation(
+        layout.water,
+        'Agua',
+        'rgba(56, 189, 248, 0.36)',
+        '#0284C7',
+        mode1.tempWater,
+        mode1.waterStoredE,
+        mode1.fireWater,
+        solarActive ? mode1.waterSolarDevice : 'none'
+      );
+
+      // 5. Dibujar estación de ACEITE (si fue añadido)
+      if (mode1.oilAdded) {
+        drawVesselStation(
+          layout.oil,
+          'Aceite',
+          'rgba(234, 179, 8, 0.45)',
+          '#CA8A04',
+          mode1.tempOil,
+          mode1.oilStoredE,
+          mode1.fireOil,
+          solarActive ? mode1.oilSolarDevice : 'none'
+        );
+      }
+
+      // 6. Dibujar todas las unidades de energía E en tránsito (siempre visibles)
+      for (let p of mode1.transitE) {
+        drawEnergySquare(p.x, p.y, p.type);
+      }
+
+      // 7. Dibujar Termómetro Ambiental separado de los objetos
+      drawThermometerWithDigitalPanel(
+        layout.ambientThermo.x,
+        layout.ambientThermo.y,
+        mode1.tempAmbient,
+        'Termómetro ambiental'
+      );
+    }
+
+    function drawSun(x, y, r) {
+      ctx.save();
+      // Halo cálido
+      const grad = ctx.createRadialGradient(x, y, r * 0.4, x, y, r * 1.9);
+      grad.addColorStop(0, 'rgba(251, 191, 36, 0.95)');
+      grad.addColorStop(0.6, 'rgba(245, 158, 11, 0.35)');
+      grad.addColorStop(1, 'rgba(245, 158, 11, 0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(x, y, r * 1.9, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Rayos solares
+      ctx.strokeStyle = '#F59E0B';
+      ctx.lineWidth = 3;
+      const numRays = 12;
+      const timeOffset = Date.now() * 0.0008;
+      for (let i = 0; i < numRays; i++) {
+        const ang = (i / numRays) * Math.PI * 2 + timeOffset;
+        ctx.beginPath();
+        ctx.moveTo(x + Math.cos(ang) * (r + 4), y + Math.sin(ang) * (r + 4));
+        ctx.lineTo(x + Math.cos(ang) * (r + 16), y + Math.sin(ang) * (r + 16));
+        ctx.stroke();
+      }
+
+      // Disco solar
+      ctx.fillStyle = '#FBBF24';
+      ctx.strokeStyle = '#D97706';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#78350F';
+      ctx.font = 'bold 13px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Sol', x, y + 4);
+      ctx.restore();
+    }
+
+    function drawSolarPanelObject(sp) {
+      ctx.save();
+      // Base y soporte fijo
+      ctx.fillStyle = '#475569';
+      ctx.fillRect(sp.x + sp.w / 2 - 8, sp.y + sp.h - 5, 16, 62);
+      ctx.fillStyle = '#334155';
+      ctx.fillRect(sp.x + sp.w / 2 - 32, sp.y + sp.h + 52, 64, 10);
+
+      // Placa fotovoltaica inclinada
+      ctx.translate(sp.x + sp.w / 2, sp.y + sp.h / 2);
+      ctx.rotate(0.18);
+
+      ctx.fillStyle = '#1E3A8A';
+      ctx.strokeStyle = '#94A3B8';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.roundRect(-sp.w / 2, -sp.h / 2, sp.w, sp.h, 6);
+      ctx.fill();
+      ctx.stroke();
+
+      // Celdas del panel
+      ctx.strokeStyle = '#60A5FA';
+      ctx.lineWidth = 1;
+      for (let c = -sp.w / 2 + 25; c < sp.w / 2; c += 26) {
+        ctx.beginPath();
+        ctx.moveTo(c, -sp.h / 2 + 3);
+        ctx.lineTo(c, sp.h / 2 - 3);
+        ctx.stroke();
+      }
+      ctx.beginPath();
+      ctx.moveTo(-sp.w / 2 + 3, 0);
+      ctx.lineTo(sp.w / 2 - 3, 0);
+      ctx.stroke();
+
+      ctx.restore();
+
+      ctx.fillStyle = '#1E293B';
+      ctx.font = 'bold 12px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Panel solar', sp.x + sp.w / 2, sp.y + sp.h + 76);
+    }
+
+    function drawElectricalCable(pts) {
+      ctx.save();
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 7;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      ctx.moveTo(pts[0].x, pts[0].y);
+      for (let i = 1; i < pts.length; i++) {
+        ctx.lineTo(pts[i].x, pts[i].y);
+      }
+      ctx.stroke();
+
+      ctx.strokeStyle = '#64748B';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawConvectionPlumes() {
+      ctx.save();
+      for (let p of mode1.convectionPlumes) {
+        ctx.fillStyle = `rgba(226, 232, 240, ${p.alpha})`;
+        ctx.strokeStyle = `rgba(148, 163, 184, ${p.alpha * 0.8})`;
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function drawVesselStation(box, label, liquidFill, liquidStroke, temp, storedSquares, isFireOn, solarDevice) {
+      ctx.save();
+
+      // 1. Dispositivo debajo del recipiente:
+      // Si se seleccionó "Bloque de hierro", reemplaza visualmente la hornalla y está en contacto directo
+      if (solarDevice === 'iron') {
+        drawIronBlockUnderVessel(box);
+      } else {
+        // Hornalla original fija directamente debajo del recipiente
+        drawBurnerStand(box);
+
+        // Si el fuego está activo, aparece directamente debajo de la hornalla
+        if (isFireOn) {
+          drawFireFlames(box.x + box.w / 2, box.standY + box.standH);
+        }
+
+        // Si se seleccionó "Caloventor", la hornalla permanece y el caloventor aparece debajo
+        if (solarDevice === 'heater') {
+          drawFanHeaterUnderVessel(box);
+        }
+      }
+
+      // 2. Líquido dentro del recipiente transparente
+      const liquidTop = box.y + 34;
+      const liquidHeight = box.h - 36;
+      ctx.fillStyle = liquidFill;
+      ctx.beginPath();
+      ctx.roundRect(box.x + 4, liquidTop, box.w - 8, liquidHeight, [0, 0, 10, 10]);
+      ctx.fill();
+
+      // Superficie superior del líquido
+      ctx.strokeStyle = liquidStroke;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(box.x + 5, liquidTop);
+      ctx.lineTo(box.x + box.w - 5, liquidTop);
+      ctx.stroke();
+
+      // 3. Símbolos rojos de energía térmica distribuidos dentro del líquido
+      for (let sq of storedSquares) {
+        const sx = box.x + sq.relX * box.w;
+        const sy = box.y + sq.relY * box.h;
+        drawEnergySquare(sx, sy, 'thermal');
+      }
+
+      // 4. Paredes del recipiente transparente (vaso de precipitados)
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      ctx.moveTo(box.x, box.y);
+      ctx.lineTo(box.x, box.y + box.h - 10);
+      ctx.arcTo(box.x, box.y + box.h, box.x + 10, box.y + box.h, 10);
+      ctx.lineTo(box.x + box.w - 10, box.y + box.h);
+      ctx.arcTo(box.x + box.w, box.y + box.h, box.x + box.w, box.y + box.h - 10, 10);
+      ctx.lineTo(box.x + box.w, box.y);
+      ctx.stroke();
+
+      // Marcas de graduación del vaso y etiqueta del líquido
+      ctx.fillStyle = '#0F172A';
+      ctx.font = 'bold 14px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(label, box.x + box.w / 2, box.y + 22);
+
+      // 5. Termómetro graduado dentro del líquido + panel digital lateral con unidad °C
+      drawVesselThermometer(box.x - 10, box.y - 45, temp, label);
+
+      ctx.restore();
+    }
+
+    function drawBurnerStand(box) {
+      ctx.save();
+      // Rejilla superior de la hornalla en contacto con la base del recipiente
+      ctx.fillStyle = '#334155';
+      ctx.fillRect(box.x - 8, box.standY, box.w + 16, 9);
+
+      // Patas fijas de la hornalla
+      ctx.fillStyle = '#475569';
+      ctx.fillRect(box.x + 4, box.standY + 9, 10, box.standH + 36);
+      ctx.fillRect(box.x + box.w - 14, box.standY + 9, 10, box.standH + 36);
+
+      // Aro quemador central
+      ctx.fillStyle = '#64748B';
+      ctx.fillRect(box.x + 28, box.standY + 9, box.w - 56, 7);
+      ctx.restore();
+    }
+
+    function drawIronBlockUnderVessel(box) {
+      ctx.save();
+      // El bloque de hierro reemplaza visualmente la hornalla y permanece en contacto directo
+      const blockW = box.w - 6;
+      const blockH = box.standH + 10;
+      const blockX = box.x + 3;
+      const blockY = box.standY;
+
+      const grad = ctx.createLinearGradient(blockX, blockY, blockX + blockW, blockY + blockH);
+      grad.addColorStop(0, '#94A3B8');
+      grad.addColorStop(0.5, '#64748B');
+      grad.addColorStop(1, '#475569');
+
+      ctx.fillStyle = grad;
+      ctx.strokeStyle = '#1E293B';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.roundRect(blockX, blockY, blockW, blockH, 4);
+      ctx.fill();
+      ctx.stroke();
+
+      // Base de apoyo en la mesa
+      ctx.fillStyle = '#334155';
+      ctx.fillRect(blockX - 6, blockY + blockH, blockW + 12, 35);
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 13px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Bloque de hierro', blockX + blockW / 2, blockY + blockH / 2 + 4);
+      ctx.font = '600 10px Inter, sans-serif';
+      ctx.fillStyle = '#E2E8F0';
+      ctx.fillText('(Conducción)', blockX + blockW / 2, blockY + blockH / 2 + 19);
+      ctx.restore();
+    }
+
+    function drawFanHeaterUnderVessel(box) {
+      ctx.save();
+      const w = box.w - 26;
+      const h = 42;
+      const x = box.x + 13;
+      const y = box.standY + box.standH - 12;
+
+      ctx.fillStyle = '#CBD5E1';
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, 8);
+      ctx.fill();
+      ctx.stroke();
+
+      // Rejilla superior de salida de aire caliente
+      ctx.fillStyle = '#B91C1C';
+      ctx.fillRect(x + 14, y + 3, w - 28, 6);
+
+      ctx.fillStyle = '#0F172A';
+      ctx.font = 'bold 11px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Caloventor', x + w / 2, y + 23);
+      ctx.font = '600 9.5px Inter, sans-serif';
+      ctx.fillStyle = '#334155';
+      ctx.fillText('(Convección - aire caliente)', x + w / 2, y + 35);
+      ctx.restore();
+    }
+
+    function drawFireFlames(centerX, bottomY) {
+      ctx.save();
+      const t = Date.now() * 0.01;
+      const offsets = [-28, -10, 10, 28];
+
+      for (let i = 0; i < offsets.length; i++) {
+        const fx = centerX + offsets[i];
+        const flicker = Math.sin(t + i * 1.4) * 5;
+        const flameTop = bottomY - 58 + flicker;
+
+        // Llama exterior naranja-roja
+        ctx.fillStyle = '#EA580C';
+        ctx.beginPath();
+        ctx.moveTo(fx - 14, bottomY);
+        ctx.quadraticCurveTo(fx - 16, bottomY - 32, fx, flameTop);
+        ctx.quadraticCurveTo(fx + 16, bottomY - 32, fx + 14, bottomY);
+        ctx.closePath();
+        ctx.fill();
+
+        // Núcleo amarillo
+        ctx.fillStyle = '#FACC15';
+        ctx.beginPath();
+        ctx.moveTo(fx - 7, bottomY);
+        ctx.quadraticCurveTo(fx - 8, bottomY - 20, fx, flameTop + 16);
+        ctx.quadraticCurveTo(fx + 8, bottomY - 20, fx + 7, bottomY);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      // Base del mechero
+      ctx.fillStyle = '#475569';
+      ctx.fillRect(centerX - 42, bottomY, 84, 14);
+      ctx.restore();
+    }
+
+    /***********************************************************************
+     * TERMÓMETROS GRADUADOS CON PANEL DIGITAL LATERAL (°C)
+     ***********************************************************************/
+    function formatTempCelsius(temp) {
+      const rounded = Math.round(temp * 10) / 10;
+      if (Math.abs(rounded - Math.round(rounded)) < 0.08) {
+        return `${Math.round(rounded)} °C`;
+      }
+      return `${rounded.toFixed(1)} °C`;
+    }
+
+    function drawVesselThermometer(x, y, temp, title) {
+      ctx.save();
+      const stemX = x + 28;
+      const stemTop = y + 12;
+      const stemHeight = 105;
+      const bulbY = stemTop + stemHeight + 8;
+
+      // Sonda sumergida dentro del líquido
+      ctx.strokeStyle = '#94A3B8';
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.moveTo(stemX, bulbY);
+      ctx.lineTo(stemX + 26, bulbY + 45);
+      ctx.stroke();
+
+      drawThermometerCoreAndDigital(x, y, temp, `Termómetro (${title})`);
+      ctx.restore();
+    }
+
+    function drawThermometerWithDigitalPanel(x, y, temp, title) {
+      drawThermometerCoreAndDigital(x, y, temp, title);
+    }
+
+    function drawThermometerCoreAndDigital(x, y, temp, title) {
+      ctx.save();
+      const stemX = x + 28;
+      const stemTop = y + 20;
+      const stemHeight = 100;
+      const bulbY = stemTop + stemHeight + 6;
+
+      // Carcasa del termómetro graduado
+      ctx.fillStyle = '#FFFFFF';
+      ctx.strokeStyle = '#64748B';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(stemX - 14, stemTop - 10, 28, stemHeight + 28, 12);
+      ctx.fill();
+      ctx.stroke();
+
+      // Escala graduada (0 °C a 100 °C)
+      ctx.strokeStyle = '#334155';
+      ctx.fillStyle = '#334155';
+      ctx.font = 'bold 8px Inter, sans-serif';
+      ctx.textAlign = 'right';
+      for (let tVal = 0; tVal <= 100; tVal += 10) {
+        const ty = stemTop + stemHeight - (tVal / 100) * stemHeight;
+        const isMajor = tVal % 20 === 0;
+        ctx.lineWidth = isMajor ? 1.5 : 1;
+        ctx.beginPath();
+        ctx.moveTo(stemX - 11, ty);
+        ctx.lineTo(stemX - (isMajor ? 4 : 7), ty);
+        ctx.stroke();
+      }
+
+      // Tubo capilar vacío
+      ctx.fillStyle = '#E2E8F0';
+      ctx.beginPath();
+      ctx.roundRect(stemX - 3, stemTop, 6, stemHeight, 3);
+      ctx.fill();
+
+      // Columna roja de mercurio/alcohol proporcional a la temperatura
+      const clampedT = Math.max(0, Math.min(100, temp));
+      const fillH = (clampedT / 100) * stemHeight;
+      ctx.fillStyle = '#E53935';
+      ctx.beginPath();
+      ctx.roundRect(stemX - 3, stemTop + stemHeight - fillH, 6, fillH + 4, 2);
+      ctx.fill();
+
+      // Bulbo rojo inferior
+      ctx.beginPath();
+      ctx.arc(stemX, bulbY, 8, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#991B1B';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // PANEL DIGITAL LATERAL con temperatura numérica y unidad °C
+      const panelX = stemX - 112;
+      const panelY = stemTop + 18;
+      const panelW = 92;
+      const panelH = 42;
+
+      ctx.fillStyle = '#F8FAFC';
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(panelX, panelY, panelW, panelH, 6);
+      ctx.fill();
+      ctx.stroke();
+
+      // Conector entre el termómetro y su panel digital lateral
+      ctx.strokeStyle = '#64748B';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(panelX + panelW, panelY + panelH / 2);
+      ctx.lineTo(stemX - 14, panelY + panelH / 2);
+      ctx.stroke();
+
+      ctx.fillStyle = '#475569';
+      ctx.font = 'bold 9px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(title, panelX + panelW / 2, panelY - 5);
+
+      // Pantalla numérica digital
+      ctx.fillStyle = '#0F172A';
+      ctx.beginPath();
+      ctx.roundRect(panelX + 5, panelY + 6, panelW - 10, panelH - 12, 4);
+      ctx.fill();
+
+      ctx.fillStyle = '#38BDF8';
+      ctx.font = 'bold 15px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(formatTempCelsius(temp), panelX + panelW / 2, panelY + 26);
+
+      ctx.restore();
+    }
+
+    /***********************************************************************
+     * SÍMBOLOS OBLIGATORIOS DE ENERGÍA (CUADRADO ROJO E / AZUL E)
+     ***********************************************************************/
+    function drawEnergySquare(x, y, type) {
+      ctx.save();
+      const size = 22;
+      const half = size / 2;
+
+      // Único uso de colores permitido: rojo para energía térmica, azul para energía eléctrica
+      ctx.fillStyle = type === 'electrical' ? '#1E88E5' : '#E53935';
+      ctx.strokeStyle = '#FFFFFF';
+      ctx.lineWidth = 1.8;
+
+      ctx.beginPath();
+      ctx.roundRect(x - half, y - half, size, size, 4);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '800 13px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('E', x, y + 1);
+      ctx.restore();
+    }
+
+    function drawCO2Square(x, y) {
+      ctx.save();
+      const w = 28;
+      const h = 18;
+      ctx.fillStyle = '#16A34A';
+      ctx.strokeStyle = '#DCFCE7';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(x - w / 2, y - h / 2, w, h, 4);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '800 10px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('CO2', x, y + 0.5);
+      ctx.restore();
+    }
+
+    /***********************************************************************
+     * LÓGICA FÍSICA Y DE PARTÍCULAS — MODO 2 (EFECTO INVERNADERO)
+     ***********************************************************************/
+    function updateMode2Physics() {
+      const earthCenter = { x: 630, y: 310 };
+
+      // 1. Temperatura terrestre progresiva hacia el equilibrio (25 °C sin CO2 | 40 °C con CO2)
+      const targetTemp = mode2.co2Added ? 40.0 : 25.0;
+      if (Math.abs(mode2.tempEarth - targetTemp) > 0.03) {
+        const step = mode2.tempEarth < targetTemp ? 0.022 : -0.025;
+        mode2.tempEarth += step;
+      } else {
+        mode2.tempEarth = targetTemp;
+      }
+
+      // 2. Ajustar progresivamente la cantidad de cuadrados E estáticos acumulados en la atmósfera:
+      // Sin CO2 adicional: siempre entre 6 y 10 cuadrados E (equilibrio en 8)
+      // Con CO2 adicional: siempre entre 18 y 20 cuadrados E (equilibrio en 19)
+      const targetStaticCount = mode2.co2Added ? 19 : 8;
+      if (mode2.staticAtmosE.length < targetStaticCount && Math.random() < 0.12) {
+        populateStaticAtmosphereSquares(mode2.staticAtmosE.length + 1);
+      } else if (mode2.staticAtmosE.length > targetStaticCount && Math.random() < 0.12) {
+        populateStaticAtmosphereSquares(mode2.staticAtmosE.length - 1);
+      }
+      // Garantizar cumplimiento estricto de los rangos en todo momento
+      if (!mode2.co2Added) {
+        if (mode2.staticAtmosE.length < 6) populateStaticAtmosphereSquares(6);
+        if (mode2.staticAtmosE.length > 10) populateStaticAtmosphereSquares(10);
+      } else {
+        if (mode2.staticAtmosE.length < 18) populateStaticAtmosphereSquares(18);
+        if (mode2.staticAtmosE.length > 20) populateStaticAtmosphereSquares(20);
+      }
+
+      // 3. Oscilación suave ("relativamente estáticos") de los cuadrados E acumulados en la atmósfera
+      const now = Date.now() * 0.002;
+      for (let i = 0; i < mode2.staticAtmosE.length; i++) {
+        const s = mode2.staticAtmosE[i];
+        const a = s.baseAngle + Math.sin(now + s.phase) * 0.035;
+        const r = s.radius + Math.cos(now * 1.2 + s.phase) * 3.5;
+        s.x = earthCenter.x + Math.cos(a) * r;
+        s.y = earthCenter.y + Math.sin(a) * r;
+      }
+
+      // 4. Actualizar los cuadrados E rápidos que pueden salir de la atmósfera (4 sin CO2 | 2 con CO2)
+      const requiredFastCount = mode2.co2Added ? 2 : 4;
+      while (mode2.escapingAtmosE.length < requiredFastCount) {
+        mode2.escapingAtmosE.push(createEscapingSquare(0));
+      }
+      while (mode2.escapingAtmosE.length > requiredFastCount) {
+        mode2.escapingAtmosE.pop();
+      }
+
+      for (let i = 0; i < mode2.escapingAtmosE.length; i++) {
+        const esc = mode2.escapingAtmosE[i];
+        esc.progress += esc.speed;
+        const currR = esc.startR + (esc.endR - esc.startR) * esc.progress;
+        esc.x = earthCenter.x + Math.cos(esc.angle) * currR;
+        esc.y = earthCenter.y + Math.sin(esc.angle) * currR;
+
+        // Cuando uno de los cuadrados rápidos sale al espacio, es reemplazado por energía que continúa entrando desde el Sol
+        if (esc.progress >= 1) {
+          mode2.escapingAtmosE[i] = createEscapingSquare(0);
+          // Asegurar que haya un cuadrado solar entrante visible para mantener el balance 1 entra / 1 sale
+          if (mode2.incomingSolarE.length < 5) {
+            mode2.incomingSolarE.push(createIncomingSolarSquare(0));
+          }
+        }
+      }
+
+      // 5. Emisión continua de radiación solar entrante
+      mode2.timers.sunEmit++;
+      if (mode2.timers.sunEmit >= 42) {
+        mode2.timers.sunEmit = 0;
+        if (mode2.incomingSolarE.length < 6) {
+          mode2.incomingSolarE.push(createIncomingSolarSquare(0));
+        }
+        // Muy pocos cuadrados E rebotan en la atmósfera exterior
+        if (mode2.reflectedSolarE.length < 1 && Math.random() < 0.22) {
+          mode2.reflectedSolarE.push({
+            x: 185,
+            y: 165,
+            MidX: 435,
+            MidY: 225,
+            endX: 350,
+            endY: 45,
+            progress: 0
+          });
+        }
+      }
+
+      // Actualizar cuadrados solares entrantes
+      for (let i = mode2.incomingSolarE.length - 1; i >= 0; i--) {
+        const inc = mode2.incomingSolarE[i];
+        inc.progress += inc.speed;
+        inc.x = inc.startX + (inc.targetX - inc.startX) * inc.progress;
+        inc.y = inc.startY + (inc.targetY - inc.startY) * inc.progress;
+        if (inc.progress >= 1) {
+          // Si hay CO2 activo, generar un pulso visual de absorción y reemisión infrarroja hacia la superficie
+          if (mode2.co2Added && mode2.reemittedIrE.length < 3) {
+            const mol = mode2.co2Molecules[Math.floor(Math.random() * mode2.co2Molecules.length)];
+            mode2.reemittedIrE.push({
+              molX: mol.x,
+              molY: mol.y,
+              surfX: earthCenter.x + (mol.x - earthCenter.x) * 0.62,
+              surfY: earthCenter.y + (mol.y - earthCenter.y) * 0.62,
+              progress: 0
+            });
+          }
+          mode2.incomingSolarE.splice(i, 1);
+        }
+      }
+
+      // Actualizar los pocos cuadrados reflejados en la atmósfera
+      for (let i = mode2.reflectedSolarE.length - 1; i >= 0; i--) {
+        const ref = mode2.reflectedSolarE[i];
+        ref.progress += 0.012;
+        if (ref.progress < 0.5) {
+          const t = ref.progress * 2;
+          ref.x = 185 + (ref.MidX - 185) * t;
+          ref.y = 165 + (ref.MidY - 165) * t;
+        } else {
+          const t = (ref.progress - 0.5) * 2;
+          ref.x = ref.MidX + (ref.endX - ref.MidX) * t;
+          ref.y = ref.MidY + (ref.endY - ref.MidY) * t;
+        }
+        if (ref.progress >= 1) {
+          mode2.reflectedSolarE.splice(i, 1);
+        }
+      }
+
+      // Actualizar reemisión infrarroja por CO2 hacia la superficie terrestre
+      for (let i = mode2.reemittedIrE.length - 1; i >= 0; i--) {
+        const re = mode2.reemittedIrE[i];
+        re.progress += 0.022;
+        if (re.progress >= 1) {
+          mode2.reemittedIrE.splice(i, 1);
+        }
+      }
+    }
+
+    /***********************************************************************
+     * DIBUJO EN CANVAS — MODO 2 (EFECTO INVERNADERO)
+     ***********************************************************************/
+    function drawMode2() {
+      const earthCenter = { x: 630, y: 310 };
+      const earthRadius = 122;
+      const atmosInner = 135;
+      const atmosOuter = 205;
+
+      // Fondo crema educativo con ventana espacial central para el sistema Sol-Tierra-Atmósfera
+      ctx.fillStyle = '#FBF7EE';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Escenario planetario delimitado
+      ctx.save();
+      ctx.fillStyle = '#0F172A';
+      ctx.strokeStyle = '#8C7A53';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.roundRect(20, 18, 925, 544, 14);
+      ctx.fill();
+      ctx.stroke();
+
+      // 1. Sol encendido permanentemente en este modo
+      drawSun(145, 145, 50);
+
+      // 2. Atmósfera fina alrededor de la Tierra
+      const atmosGrad = ctx.createRadialGradient(
+        earthCenter.x, earthCenter.y, earthRadius,
+        earthCenter.x, earthCenter.y, atmosOuter
+      );
+      atmosGrad.addColorStop(0, 'rgba(56, 189, 248, 0.32)');
+      atmosGrad.addColorStop(0.7, mode2.co2Added ? 'rgba(74, 222, 128, 0.24)' : 'rgba(56, 189, 248, 0.18)');
+      atmosGrad.addColorStop(1, 'rgba(56, 189, 248, 0.04)');
+
+      ctx.fillStyle = atmosGrad;
+      ctx.beginPath();
+      ctx.arc(earthCenter.x, earthCenter.y, atmosOuter, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Borde exterior de la atmósfera identificado
+      ctx.strokeStyle = 'rgba(125, 211, 252, 0.65)';
+      ctx.setLineDash([6, 5]);
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.arc(earthCenter.x, earthCenter.y, atmosOuter, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = '#BAE6FD';
+      ctx.font = 'bold 12px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Atmósfera', earthCenter.x, earthCenter.y - atmosOuter - 8);
+
+      // 3. Representación circular de la Tierra
+      drawEarthCircle(earthCenter.x, earthCenter.y, earthRadius);
+
+      // 4. Trayectorias identificadas (Condición 12.16: diferenciar visualmente radiación solar entrante e infrarroja terrestre)
+      drawIdentifiedRadiationTrajectories(earthCenter);
+
+      // 5. Si se activó "Añadir CO2", dibujar los pequeños cuadrados verdes con la inscripción CO2 en la atmósfera
+      if (mode2.co2Added) {
+        for (let mol of mode2.co2Molecules) {
+          drawCO2Square(mol.x, mol.y);
+        }
+      }
+
+      // 6. Dibujar cuadrados rojos E estáticos acumulados dentro de la atmósfera (6-10 sin CO2 | 18-20 con CO2)
+      for (let s of mode2.staticAtmosE) {
+        drawEnergySquare(s.x, s.y, 'thermal');
+      }
+
+      // 7. Dibujar los cuadrados rojos E rápidos que pueden salir de la atmósfera (4 sin CO2 | 2 con CO2)
+      for (let esc of mode2.escapingAtmosE) {
+        // Estela sutil de velocidad para distinguir los cuadrados rápidos salientes
+        const tailX = esc.x - Math.cos(esc.angle) * 15;
+        const tailY = esc.y - Math.sin(esc.angle) * 15;
+        ctx.strokeStyle = 'rgba(248, 113, 113, 0.75)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(tailX, tailY);
+        ctx.lineTo(esc.x, esc.y);
+        ctx.stroke();
+
+        drawEnergySquare(esc.x, esc.y, 'thermal');
+      }
+
+      // 8. Dibujar cuadrados rojos E entrando desde el Sol
+      for (let inc of mode2.incomingSolarE) {
+        drawEnergySquare(inc.x, inc.y, 'thermal');
+      }
+
+      // 9. Dibujar los muy pocos cuadrados E que rebotan en la atmósfera
+      for (let ref of mode2.reflectedSolarE) {
+        drawEnergySquare(ref.x, ref.y, 'thermal');
+      }
+
+      // 10. Dibujar cuadrados E reemitidos hacia la superficie terrestre por el CO2
+      for (let re of mode2.reemittedIrE) {
+        const rx = re.molX + (re.surfX - re.molX) * re.progress;
+        const ry = re.molY + (re.surfY - re.molY) * re.progress;
+        drawEnergySquare(rx, ry, 'thermal');
+      }
+
+      ctx.restore();
+
+      // 11. Panel lateral derecho: Termómetro ambiental graduado + Panel digital (°C) + Estado de equilibrio
+      drawThermometerWithDigitalPanel(1070, 55, mode2.tempEarth, 'Termómetro terrestre');
+      drawMode2DidacticSummary(962, 235);
+    }
+
+    function drawEarthCircle(cx, cy, r) {
+      ctx.save();
+      // Océanos
+      const oceanGrad = ctx.createRadialGradient(cx - 30, cy - 30, 20, cx, cy, r);
+      oceanGrad.addColorStop(0, '#2563EB');
+      oceanGrad.addColorStop(1, '#1D4ED8');
+      ctx.fillStyle = oceanGrad;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Continentes estilizados
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.clip();
+
+      ctx.fillStyle = '#15803D';
+      ctx.beginPath();
+      ctx.ellipse(cx - 38, cy - 22, 42, 28, 0.3, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.ellipse(cx - 18, cy + 42, 28, 45, -0.2, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.ellipse(cx + 55, cy - 10, 38, 34, 0.1, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Casquetes polares suaves
+      ctx.fillStyle = '#F8FAFC';
+      ctx.beginPath();
+      ctx.ellipse(cx, cy - r + 8, 55, 16, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(cx, cy + r - 8, 50, 14, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // Contorno de la Tierra
+      ctx.strokeStyle = '#60A5FA';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 15px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Tierra', cx, cy + 5);
+      ctx.restore();
+    }
+
+    function drawIdentifiedRadiationTrajectories(earthCenter) {
+      ctx.save();
+
+      // A. Flecha guía: Radiación solar entrante (Amarillo)
+      ctx.strokeStyle = 'rgba(250, 204, 21, 0.65)';
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([7, 5]);
+      ctx.beginPath();
+      ctx.moveTo(205, 165);
+      ctx.lineTo(510, 275);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      drawArrowHead(510, 275, Math.atan2(275 - 165, 510 - 205), '#FACC15');
+
+      // Etiqueta de trayectoria solar entrante
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+      ctx.strokeStyle = '#FACC15';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(225, 108, 195, 26, 6);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = '#FEF08A';
+      ctx.font = 'bold 11.5px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('➔ Radiación solar entrante', 322, 125);
+
+      // B. Flecha guía: Radiación infrarroja terrestre saliente (Rojo-Naranja)
+      ctx.strokeStyle = 'rgba(248, 113, 113, 0.7)';
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([7, 5]);
+      ctx.beginPath();
+      ctx.moveTo(earthCenter.x + 95, earthCenter.y - 75);
+      ctx.lineTo(earthCenter.x + 225, earthCenter.y - 175);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      drawArrowHead(earthCenter.x + 225, earthCenter.y - 175, Math.atan2(-100, 130), '#F87171');
+
+      // Etiqueta de radiación infrarroja terrestre
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+      ctx.strokeStyle = '#F87171';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(695, 65, 225, 26, 6);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = '#FECACA';
+      ctx.font = 'bold 11.5px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('➔ Radiación infrarroja terrestre', 807, 82);
+
+      // C. Si hay CO2 añadido, mostrar flecha identificada de reemisión infrarroja hacia la superficie
+      if (mode2.co2Added) {
+        ctx.strokeStyle = 'rgba(74, 222, 128, 0.85)';
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ctx.moveTo(earthCenter.x + 148, earthCenter.y + 65);
+        ctx.lineTo(earthCenter.x + 102, earthCenter.y + 42);
+        ctx.stroke();
+        drawArrowHead(earthCenter.x + 102, earthCenter.y + 42, Math.atan2(-23, -46), '#4ADE80');
+
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+        ctx.strokeStyle = '#4ADE80';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.roundRect(685, 495, 240, 42, 6);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = '#BBF7D0';
+        ctx.font = 'bold 11px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Absorción y reemisión infrarroja', 805, 513);
+        ctx.fillText('por CO2 hacia la superficie', 805, 528);
+      }
+
+      ctx.restore();
+    }
+
+    function drawArrowHead(x, y, angle, color) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(angle);
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(-11, -5.5);
+      ctx.lineTo(-11, 5.5);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawMode2DidacticSummary(x, y) {
+      ctx.save();
+      const w = 220;
+      const h = 325;
+
+      ctx.fillStyle = '#EFE6CE';
+      ctx.strokeStyle = '#8C7A53';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, 10);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#0F172A';
+      ctx.font = 'bold 13px Inter, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('Balance energético', x + 12, y + 24);
+
+      ctx.strokeStyle = '#C8B996';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(x + 12, y + 32);
+      ctx.lineTo(x + w - 12, y + 32);
+      ctx.stroke();
+
+      const isEquilibrium = Math.abs(mode2.tempEarth - (mode2.co2Added ? 40 : 25)) < 0.25;
+      ctx.fillStyle = isEquilibrium ? '#166534' : '#92400E';
+      ctx.font = 'bold 11.5px Inter, sans-serif';
+      ctx.fillText(
+        isEquilibrium
+          ? `Equilibrio alcanzado (${mode2.co2Added ? '40 °C' : '25 °C'})`
+          : 'Ajustando hacia el equilibrio...',
+        x + 12,
+        y + 52
+      );
+
+      ctx.fillStyle = '#334155';
+      ctx.font = '600 11px Inter, sans-serif';
+      const lines = mode2.co2Added
+        ? [
+            '• Con CO2 adicional:',
+            `  Energía acumulada en`,
+            `  atmósfera: ${mode2.staticAtmosE.length} cuadrados E`,
+            '  (rango entre 18 y 20).',
+            '• Salida rápida al espacio:',
+            `  ${mode2.escapingAtmosE.length} cuadrados E (reemplazados`,
+            '  por los que entran del Sol).',
+            '• El CO2 absorbe y reemite',
+            '  radiación infrarroja hacia',
+            '  la superficie sin bloquear',
+            '  toda la energía saliente.'
+          ]
+        : [
+            '• Sin CO2 adicional:',
+            `  Energía acumulada en`,
+            `  atmósfera: ${mode2.staticAtmosE.length} cuadrados E`,
+            '  (rango entre 6 y 10).',
+            '• Salida rápida al espacio:',
+            `  ${mode2.escapingAtmosE.length} cuadrados E (reemplazados`,
+            '  por los que entran del Sol).',
+            '• A 25 °C la energía solar',
+            '  que ingresa se compensa',
+            '  con la energía infrarroja',
+            '  que sale al espacio.'
+          ];
+
+      let ly = y + 76;
+      for (let line of lines) {
+        ctx.fillText(line, x + 12, ly);
+        ly += 20;
+      }
+
+      ctx.restore();
+    }
+
+    /***********************************************************************
+     * BUCLE PRINCIPAL DE ANIMACIÓN
+     ***********************************************************************/
+    function animate() {
+      if (currentMode === 1) {
+        updateMode1Physics();
+        drawMode1();
+      } else {
+        updateMode2Physics();
+        drawMode2();
+      }
+      requestAnimationFrame(animate);
+    }
+
+    window.onload = function () {
+      initMode1();
+      initMode2();
+      switchMode(1);
+      animate();
+    };
+  </script>
+</body>
+</html>
